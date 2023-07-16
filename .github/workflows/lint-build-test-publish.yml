@@ -111,13 +111,13 @@ jobs:
               if: success()
               uses: chrnorm/deployment-status@v2
               with:
-                  deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+                  deployment-id: ${{ steps.deployment.outputs.deployment_id }}
                   state: success
                   token: "${{ github.token }}"
             - name: Deployment failed
               if: failure()
               uses: chrnorm/deployment-status@v2
               with:
-                  deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+                  deployment-id: ${{ steps.deployment.outputs.deployment_id }}
                   state: failure
                   token: "${{ github.token }}"
