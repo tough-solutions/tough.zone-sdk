@@ -80,7 +80,7 @@ jobs:
             - test
         steps:
             - name: Deployment in progress
-              uses: chrnorm/deployment-action@releases/v2
+              uses: chrnorm/deployment-action@v2
               id: deployment
               with:
                   environment: NPM
@@ -109,14 +109,14 @@ jobs:
               run: npm run semantic-release
             - name: Deployment successful
               if: success()
-              uses: chrnorm/deployment-status@releases/v2
+              uses: chrnorm/deployment-status@v2
               with:
                   deployment_id: ${{ steps.deployment.outputs.deployment_id }}
                   state: success
                   token: "${{ github.token }}"
             - name: Deployment failed
               if: failure()
-              uses: chrnorm/deployment-status@releases/v2
+              uses: chrnorm/deployment-status@v2
               with:
                   deployment_id: ${{ steps.deployment.outputs.deployment_id }}
                   state: failure
