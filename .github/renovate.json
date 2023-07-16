@@ -19,10 +19,11 @@
     },
     {
       "matchPackagePatterns": [
+        "^@typescript-eslint/",
         "^eslint",
-        "^@typescript-eslint/"
+        "^prettier"
       ],
-      "groupName": "ESLint",
+      "groupName": "Linters",
       "automerge": true
     },
     {
