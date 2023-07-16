@@ -1,0 +1,123 @@
+name: Lint, build, test, publish
+on:
+    push:
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+            - name: Cache node modules
+              uses: actions/cache@v3
+              env:
+                  cache-name: cache-node-modules
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-${{ env.cache-name }}-
+                      ${{ runner.os }}-
+            - run: npm ci
+            - run: npm run lint
+
+    build:
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+            - name: Cache node modules
+              uses: actions/cache@v3
+              env:
+                  cache-name: cache-node-modules
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-${{ env.cache-name }}-
+                      ${{ runner.os }}-
+            - run: npm ci
+            - run: npm run build
+            - uses: actions/upload-artifact@v3
+              with:
+                  name: lib
+                  path: lib/
+
+    test:
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+            - name: Cache node modules
+              uses: actions/cache@v3
+              env:
+                  cache-name: cache-node-modules
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-${{ env.cache-name }}-
+                      ${{ runner.os }}-
+            - run: npm ci
+            - run: npm run test
+
+    publish:
+        if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master'
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        needs:
+            - lint
+            - build
+            - test
+        steps:
+            - name: Deployment in progress
+              uses: chrnorm/deployment-action@releases/v1
+              id: deployment
+              with:
+                  environment: NPM
+                  initial_status: in_progress
+                  token: ${{ github.token }}
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+            - name: Cache node modules
+              uses: actions/cache@v3
+              env:
+                  cache-name: cache-node-modules
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-${{ env.cache-name }}-
+                      ${{ runner.os }}-
+            - uses: actions/download-artifact@v3
+            - run: sudo npm install -g semantic-release is-ci
+            - name: Release
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: npm run semantic-release
+            - name: Deployment successful
+              if: success()
+              uses: chrnorm/deployment-status@releases/v1
+              with:
+                  deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+                  state: success
+                  token: "${{ github.token }}"
+            - name: Deployment failed
+              if: failure()
+              uses: chrnorm/deployment-status@releases/v1
+              with:
+                  deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+                  state: failure
+                  token: "${{ github.token }}"

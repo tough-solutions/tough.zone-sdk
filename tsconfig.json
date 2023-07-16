@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "lib": ["ES2020", "dom"],
+        "module": "commonjs",
+        "target": "ES2020",
+        "moduleResolution": "node",
+        "strict": true,
+        "declaration": true,
+        "removeComments": true,
+        "allowSyntheticDefaultImports": true,
+        "outDir": "./lib",
+        "baseUrl": "./",
+        "strictPropertyInitialization": false
+    },
+    "include": ["**/*.ts"],
+    "exclude": ["lib", "node_modules", "test", "**/*(e2e-)?spec.ts", "jest.config.ts"]
+}

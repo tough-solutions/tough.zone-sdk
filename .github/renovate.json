@@ -1,0 +1,35 @@
+{
+  "dependencyDashboard": true,
+  "baseBranches": ["dev"],
+  "postUpdateOptions": ["npmDedupe"],
+  "rollbackPrs": true,
+  "automergeType": "branch",
+  "labels": ["\uD83D\uDCE6 dependencies"],
+  "lockFileMaintenance": { "enabled": true, "automerge": true },
+  "prCreation": "not-pending",
+  "stopUpdatingLabel": "⛔️ on hold",
+  "reviewers": [
+    "schw4rzlicht"
+  ],
+  "packageRules": [
+    {
+      "matchPackagePatterns": "^@types/",
+      "groupName": "Definitely typed",
+      "automerge": true
+    },
+    {
+      "matchPackagePatterns": [
+        "^eslint",
+        "^@typescript-eslint/"
+      ],
+      "groupName": "ESLint",
+      "automerge": true
+    },
+    {
+      "matchPackagePatterns": "jest",
+      "groupName": "Jest",
+      "automerge": true
+    }
+  ]
+}
+
